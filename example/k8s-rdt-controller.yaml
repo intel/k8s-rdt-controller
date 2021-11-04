@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rdt-controller-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: rdt-controller-agent
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rdt-controller-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rdt-controller-agent
+subjects:
+- kind: ServiceAccount
+  name: rdt-controller-agent
+  namespace: default
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: rdt-controller-daemonset-agent
+spec:
+  selector:
+    matchLabels:
+      app: k8s-rdt-controller-agent
+  template:
+    metadata:
+      labels:
+        app: k8s-rdt-controller-agent
+    spec:
+      serviceAccountName: rdt-controller-agent
+      hostPID: true
+      hostIPC: true
+      containers:
+      - name: k8s-rdt-controller-agent
+        image: k8s-rdt-controller:0.1
+        securityContext:
+          privileged: true
+        command: ["/usr/bin/agent"]
+        args: ["-direct"]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: resctrl
+          mountPath: /sys/fs/resctrl/
+        - name: hostname
+          mountPath: /etc/hostname
+        - name: sysfs
+          mountPath: /sys/fs/cgroup/
+      volumes:
+      - name: resctrl
+        hostPath:
+          path: /sys/fs/resctrl/
+      - name: hostname
+        hostPath:
+          path: /etc/hostname
+      - name: sysfs
+        hostPath:
+          path: /sys/fs/cgroup/
