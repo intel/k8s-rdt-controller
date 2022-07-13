@@ -169,8 +169,10 @@ func (w *watcher) watchPods() {
 			case k8swatch.Added, k8swatch.Modified:
 				klog.Infof("pod (%s) is updated", e.Object.(*core_v1.Pod).Name)
 //				klog.Infof("Pod info: %#v", e.Object.(*core_v1.Pod))
-				rcgroup, _ := e.Object.(*core_v1.Pod).Labels["rcgroup"];
-				assignControlGroup(string(e.Object.(*core_v1.Pod).UID), rcgroup)
+				if rcgroup, ok := e.Object.(*core_v1.Pod).Labels["rcgroup"]; ok {
+					klog.Infof("Pod: %s; rcgroup: %s", string(e.Object.(*core_v1.Pod).UID), rcgroup)
+					assignControlGroup(string(e.Object.(*core_v1.Pod).UID), rcgroup)
+				}
 
 			case k8swatch.Deleted:
 				klog.Info("a pod is deleted " + e.Object.(*core_v1.Pod).UID)

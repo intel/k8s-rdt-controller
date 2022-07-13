@@ -219,6 +219,9 @@ func findPodAndAssign(dir, uid, rcgroup string) {
 
 // assignControlGroup adds the tasks of a pod into a resctrl control group
 func assignControlGroup(uid, rcgroup string) {
+	//the newset containerd has changed cgroup path delimiter from "_" to "-", wo we try both
 	id := strings.Replace(uid, "-", "_", -1)
 	findPodAndAssign(cgroupCpusetRoot, id, rcgroup)
+
+	findPodAndAssign(cgroupCpusetRoot, uid, rcgroup)
 }
