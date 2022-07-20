@@ -93,6 +93,10 @@ func (w *watcher) watchNode() {
 				klog.Warning("our node is removed...")
 			}
 		}
+
+		klog.Warning("seems node watcher is closed, going to restart ...")
+		w.watchNode()
+		klog.Warning("node configMap watcher restarted")
 	}(k8w.ResultChan(), "")
 }
 
@@ -117,6 +121,10 @@ func (w *watcher) watchNodeConfigMap() {
 				w.setNodeConfig(nil)
 			}
 		}
+
+		klog.Warning("seems node configMap watcher is closed, going to restart ...")
+		w.watchNodeConfigMap()
+		klog.Warning("node configMap watcher restarted")
 	}(k8w.ResultChan())
 }
 
@@ -153,6 +161,11 @@ func (w *watcher) watchGroupConfigMap(group string) {
 				w.setGroupConfig(nil)
 			}
 		}
+
+		klog.Warning("seems group configMap watcher is closed, going to restart ...")
+		w.watchGroupConfigMap(group)
+		klog.Warning("group configMap watcher is restarted")
+
 	}(k8w.ResultChan(), group)
 }
 
@@ -178,6 +191,11 @@ func (w *watcher) watchPods() {
 				klog.Info("a pod is deleted " + e.Object.(*core_v1.Pod).UID)
 			}
 		}
+
+		klog.Warning("seems pod watcher is closed, going to restart ...")
+		w.watchPods()
+		klog.Warning("pod watcher is restarted")
+
 	}(k8w.ResultChan())
 }
 
