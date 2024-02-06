@@ -2,13 +2,13 @@
 
 k8s-rdt-controller is a helper for applying RDT / HWDRC in a kubernetes cluster.
 
--  It adds label(s) on nodes in the cluster to indicate if RDT / HWDRC feature is supported by the nodes.
+-  It adds label(s) on nodes in the cluster to indicate if RDT / HWDRC is supported by the nodes.
 -  It monitors RDT / HWDRC configuration and applies the configuration on relative nodes automatically.
 -  It montiors the information of pods and puts the pods in the control of  RDT / HWDRC on demand.
 
 ## Label a node
 
-k8s-rdt-controller checks the state of RDT / HWDRC feature of the cluster nodes. It adds "RDT='state'" and "HWDRC='state'" label on the nodes. 'state' can be 'no', 'disabled' or 'enabled'. User can ensure a pod is assigned to a node with RDT enabled by node selector. e.g.
+k8s-rdt-controller checks the state of RDT / HWDRC of the cluster nodes. It adds "RDT='state'" and "HWDRC='state'" label on the nodes. 'state' can be 'no', 'disabled' or 'enabled'. User can ensure a pod is assigned to a node with RDT enabled by node selector. e.g.
 ```
   nodeSelector:
     RDT: enabled
